@@ -3,7 +3,6 @@ import ed.u3.Algoritmos.BFS;
 import ed.u3.Algoritmos.DFS;
 import java.util.Scanner;
 import java.io.File;
-import java.io.FilenameFilter;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,16 +14,16 @@ public class Main {
             System.out.println(Utils.C_AMARILLO + "\n==========================================" + Utils.C_RESET);
             System.out.println(Utils.C_CELESTE + "             GRAFOS (DFS/BFS)              " + Utils.C_RESET);
             System.out.println(Utils.C_AMARILLO + "==========================================" + Utils.C_RESET);
-            System.out.println(Utils.C_VERDE + "| ~ 1. DataSet Grafo NO Dirigido." + Utils.C_RESET);
-            System.out.println(Utils.C_VERDE + "| ~ 2. Dataset Grafo Dirigido." + Utils.C_RESET);
-            System.out.println(Utils.C_VERDE + "| ~ 3. Buscar datasets." + Utils.C_RESET);
+            System.out.println(Utils.C_VERDE + "| ~ 1. DataSet Grafo NO Dirigido" + Utils.C_RESET);
+            System.out.println(Utils.C_VERDE + "| ~ 2. Dataset Grafo Dirigido" + Utils.C_RESET);
+            System.out.println(Utils.C_VERDE + "| ~ 3. Buscar datasets" + Utils.C_RESET);
             System.out.println(Utils.C_ROJO + "| ~ 4. Salir" + Utils.C_RESET);
             System.out.print(Utils.C_AZUL + "| -  Ingrese una opcion: " + Utils.C_RESET);
             // usa la funcion nueva pa que no truene si meten letras
             int opcion = ingresarNumero(sc);
             // si elige 4 rompe el while y sale del sistema
             if (opcion == 4) {
-                System.out.println(Utils.C_ROJO + "\n| ~ Finalizando sistema..." + Utils.C_RESET);
+                System.out.println(Utils.C_ROJO + "\n| ~ Saliendo... Bendiciones Abundantes" + Utils.C_RESET);
                 break;
             }
             String archivoSeleccionado = "";
@@ -33,26 +32,16 @@ public class Main {
             boolean continuarCarga = true;
 
             switch (opcion) {
-                case 1 -> {
-                    archivoSeleccionado = rutaBase + "g_nodirigido_matriz.txt";
-                    esDirigido = false;
-                }
-                case 2 -> {
-                    archivoSeleccionado = rutaBase + "g_dirigido_matriz.txt";
-                    esDirigido = true;
-                }
+                case 1 -> archivoSeleccionado = rutaBase + "g_nodirigido_matriz.txt";
+                case 2 -> archivoSeleccionado = rutaBase + "g_dirigido_matriz.txt";
                 case 3 -> {
                     // busca los archivos en la carpeta
                     File carpeta = new File(rutaBase);
                     // filtro pa que solo salgan los txt
-                    File[] archivosEncontrados = carpeta.listFiles(new FilenameFilter() {
-                        public boolean accept(File dir, String name) {
-                            return name.toLowerCase().endsWith(".txt");
-                        }
-                    });
+                    File[] archivosEncontrados = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
                     // si no hay nada o es null
                     if (archivosEncontrados == null || archivosEncontrados.length == 0) {
-                        System.out.println(Utils.C_ROJO + "\n[AVISO] No se encontraron archivos .txt en: " + rutaBase + Utils.C_RESET);
+                        System.out.println(Utils.C_ROJO + "\nAVISO: No se encontraron archivos .txt en la ruta: " + rutaBase + Utils.C_RESET);
                         continuarCarga = false; // marca error
                     } else {
                         System.out.println(Utils.C_AZUL + "\n| -------- Archivos Encontrados -------- |" + Utils.C_RESET);
@@ -72,11 +61,8 @@ public class Main {
                             // saca el archivo del array
                             File fileElegido = archivosEncontrados[indice - 1];
                             archivoSeleccionado = fileElegido.getAbsolutePath();
-
                             System.out.println(Utils.C_CELESTE + "| ~ Dataset seleccionado: " + fileElegido.getName() + Utils.C_RESET);
-                            System.out.print(Utils.C_VERDE + "| ~ Este grafo es dirigido? (1/0): " + Utils.C_RESET);
-                            int tipo = ingresarNumero(sc);
-                            esDirigido = (tipo == 1);
+
                         }
                     }
                 }
@@ -90,16 +76,17 @@ public class Main {
                 continue;
             }
             // revisa si existe el archivo de verdad
-            File f = new File(archivoSeleccionado);
-            if(!f.exists()) {
+            File file = new File(archivoSeleccionado);
+            if(!file.exists()) {
                 System.out.println(Utils.C_ROJO + "\n| ~ No existe el archivo: " +  archivoSeleccionado + Utils.C_RESET);
                 continue; // regresa al menu
             }
             System.out.println(Utils.C_AZUL + "\n| ~ Archivo cargado: " + Utils.C_AMARILLO + archivoSeleccionado + Utils.C_RESET);
-            Grafo grafo = CargarGrafo.cargar(archivoSeleccionado, esDirigido);
+            Grafo grafo = CargarGrafo.cargar(archivoSeleccionado);
+
             if (grafo != null) {
                 grafo.mostrarResumen();
-                System.out.print(Utils.C_VERDE + "\n| - Ingrese el vértice de origen (0 a " + (grafo.getnVertices() - 1) + "): " + Utils.C_RESET);
+                System.out.print(Utils.C_VERDE + "\n| - Ingrese el vertice de origen (0 a " + (grafo.getnVertices() - 1) + "): " + Utils.C_RESET);
                 int origen = ingresarNumero(sc);
 
                 if (origen < 0 || origen >= grafo.getnVertices()) {
